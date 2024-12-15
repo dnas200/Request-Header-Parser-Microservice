@@ -19,9 +19,22 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+app.use((req, res, next) => {
+  req.clientIp = req.headers['x-forward-for'] || req.connection.remoteAddress;
+  next(); 
+})
+
 // your first API endpoint...
-app.get('/api/hello', function (req, res) {
-  res.json({ greeting: 'hello API' });
+app.get('/api/whoami', function (req, res) {
+  const locale = new Intl.Locale("en");
+  const userAgent = navigator.userAgent;
+
+  res.json({ 
+    ipaddress: req.clientIp,
+    language: locale.language,
+    software: userAgent,
+
+   });
 });
 
 // listen for requests :)
